@@ -1,9 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import mongoose from 'mongoose';
+import mongoose, { get } from 'mongoose';
 import { postSignup, postLogin } from './controllers/user.js';
-import { postBlogs } from './controllers/blog.js';
+import { postBlogs , getBlogs } from './controllers/blog.js';
 
 
 dotenv.config();
@@ -27,10 +27,11 @@ app.get('/', (req, res) => {
     res.json("server is wake up")
 })
 
-
+app.get('/blogs', getBlogs);
 app.post('/signup', postSignup)
 app.post('/login', postLogin)
 app.post("/blogs", postBlogs)
+
 
 app.listen(PORT, (err) => {
     if (err) {

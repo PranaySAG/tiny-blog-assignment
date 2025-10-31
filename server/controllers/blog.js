@@ -10,8 +10,6 @@ const postBlogs = async (req, res) => {
         });
     }
 
-    
-
     const newBlog = new Blog({
         title,
         content,
@@ -19,9 +17,6 @@ const postBlogs = async (req, res) => {
         author,
         slug: `temp-slug-${Date.now()}-${Math.random().toString()}`.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
     });
-
-    
-
 
     const savedBlog = await newBlog.save();
 
@@ -34,4 +29,14 @@ const postBlogs = async (req, res) => {
     });
 }
 
-export { postBlogs };
+const getBlogs = async (req, res) => {
+   const blogs = await Blog.find().populate('author', '_id name email');
+
+   res.status(200).json({
+    success: true,
+    data: blogs,
+    message: "Blogs fetched successfully"
+   })
+}
+
+export { postBlogs , getBlogs };
