@@ -6,6 +6,7 @@ const blogSchema = new Schema({
     status: { type: String, enum: ['draft', 'published', 'archived'], default: 'draft' },
     category: { type: String, required: true },
     author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    slug: { type: String, required: true, unique: true },
 }, { timestamps: true });
 
 const Blog = model("Blog", blogSchema);

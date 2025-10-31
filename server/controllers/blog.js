@@ -1,0 +1,37 @@
+import Blog from "../models/Blog.js";
+
+const postBlogs = async (req, res) => {
+    const { title, content, category , author } = req.body;
+
+    if(!title || !content || !category || !author) {
+        return res.status(400).json({
+            success: false,
+            message: "All fields are required",
+        });
+    }
+
+    
+
+    const newBlog = new Blog({
+        title,
+        content,
+        category,
+        author,
+        slug: `temp-slug-${Date.now()}-${Math.random().toString()}`.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+    });
+
+    
+
+
+    const savedBlog = await newBlog.save();
+
+    savedBlog.slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')}-${savedBlog._id}`;
+    await savedBlog.save();
+    res.status(201).json({
+        success: true,
+        message: "Blog created successfully",
+        blog: savedBlog,
+    });
+}
+
+export { postBlogs };
