@@ -3,7 +3,6 @@ import { Link } from "react-router";
 function BlogCard({
   _id,
   title,
-  content,
   category,
   author,
   slug,
@@ -18,8 +17,7 @@ function BlogCard({
         {" / "}
         {category}
       </div>
-      <h2 className="text-2xl font-semibold text-gray-800">{title}</h2>
-      <p className="text-gray-700">{content}</p>
+      <h1 className="text-4xl font-semibold text-gray-800">{title}</h1>
       <div className="text-sm text-gray-600 space-y-1">
         <p>
           <span className="font-medium text-gray-800">Author:</span>{" "}

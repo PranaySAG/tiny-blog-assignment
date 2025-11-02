@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose, { get } from 'mongoose';
 import { postSignup, postLogin } from './controllers/user.js';
-import { postBlogs , getBlogs } from './controllers/blog.js';
+import { postBlogs , getBlogs, getBlogForSlug } from './controllers/blog.js';
 
 
 dotenv.config();
@@ -31,6 +31,7 @@ app.get('/blogs', getBlogs);
 app.post('/signup', postSignup)
 app.post('/login', postLogin)
 app.post("/blogs", postBlogs)
+app.get("/blogs/:slug", getBlogForSlug)
 
 
 app.listen(PORT, (err) => {
