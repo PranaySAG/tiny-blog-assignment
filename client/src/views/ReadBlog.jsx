@@ -37,6 +37,21 @@ function ReadBlog() {
       <p>
         <span className="text-sm text-gray-800">Published At:</span>{" "}
         {new Date(blog?.publishedAt || blog?.updatedAt).toLocaleDateString()}
+        <span className="text-sm text-gray-800">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            <span className="ml-1">{blog.viewCount}</span>
+          </span>{" "}
       </p>
       <MDEditor.Markdown className="white" source={blog.content} readOnly />
     </div>

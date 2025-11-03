@@ -50,6 +50,7 @@ const AllBlogs = () => {
             createdAt={blog.createdAt}
             status={blog.status}
             publishedAt={blog.publishedAt}
+            viewCount={blog.viewCount}
           />
         ))}
       </div>

@@ -5,6 +5,7 @@ import mongoose, { get } from 'mongoose';
 import { postSignup, postLogin } from './controllers/user.js';
 import { postBlogs , getBlogs, getBlogForSlug, patchPublishBlog, putBlogs } from './controllers/blog.js';
 import jwt from 'jsonwebtoken';
+import Blog from './models/Blog.js';
 
 dotenv.config();
 const app = express();  
@@ -49,11 +50,23 @@ const jwtCheck = (req, res, next) => {
   next();
 };
 
+const increaseViewCount = async (req, res, next) => {
+    const { slug } = req.params;
+    try {
+       const blog = await Blog.findOne( {slug})
+       blog.viewCount += 1;
+       await blog.save();
+    } catch (error) {
+        console.error("Error increasing view count:", error);
+    }
+    next();
+};
+
 app.get('/blogs', getBlogs);
 app.post('/signup', postSignup)
 app.post('/login', postLogin)
 app.post("/blogs", jwtCheck, postBlogs)
-app.get("/blogs/:slug", getBlogForSlug)
+app.get("/blogs/:slug", increaseViewCount, getBlogForSlug)
 app.patch("/blogs/:slug/publish", jwtCheck, patchPublishBlog)
 app.put("/blogs/:slug", jwtCheck, putBlogs)
 
