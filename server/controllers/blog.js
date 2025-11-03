@@ -80,4 +80,17 @@ const patchPublishBlog = async (req, res) => {
     });
 }
 
-export { postBlogs , getBlogs , getBlogForSlug , patchPublishBlog };
+const putBlogs = async (req, res) => {
+    const { slug } = req.params;
+    const { title, content, category, author } = req.body;
+
+    const blog = await Blog.findOneAndUpdate({ slug: slug }, { title, content, category });
+
+    res.status(200).json({
+        success: true,
+        data: blog,
+        message: "Blog updated successfully"
+    });
+}
+
+export { postBlogs , getBlogs , getBlogForSlug , patchPublishBlog , putBlogs };
