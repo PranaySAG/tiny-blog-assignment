@@ -1,33 +1,64 @@
 import Blog from "../models/Blog.js";
+import jwt from "jsonwebtoken"; 
 
 const postBlogs = async (req, res) => {
-    const { title, content, category , author } = req.body;
+  const { title, content, category } = req.body;
+  const { authorization } = req.headers;
 
-    if(!title || !content || !category || !author) {
-        return res.status(400).json({
-            success: false,
-            message: "All fields are required",
-        });
-    }
+  if (!authorization) {
+    return res.status(401).json({
+      success: false,
+      message: "Authorization header missing",
+    });
+  }
 
+  let decodedToken;
+  try {
+    decodedToken = jwt.verify(
+      authorization.split(" ")[1],
+      process.env.JWT_SECRET
+    );
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+
+  try {
     const newBlog = new Blog({
-        title,
-        content,
-        category,
-        author,
-        slug: `temp-slug-${Date.now()}-${Math.random().toString()}`.replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
+      title,
+      content,
+      category,
+      author: decodedToken.id, 
+      slug: `temp-slug-${Date.now()}-${Math.random()
+        .toString()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)+/g, "")}`,
     });
 
     const savedBlog = await newBlog.save();
 
-    savedBlog.slug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')}-${savedBlog._id}`;
+    savedBlog.slug = `${title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "")}-${savedBlog._id}`;
+
     await savedBlog.save();
+
     res.status(201).json({
-        success: true,
-        message: "Blog created successfully",
-        blog: savedBlog,
+      success: true,
+      message: "Blog created successfully",
+      blog: savedBlog,
     });
-}
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to create blog",
+      error: error.message,
+    });
+  }
+};
 
 const getBlogs = async (req, res) => {
     const { author } = req.query;
