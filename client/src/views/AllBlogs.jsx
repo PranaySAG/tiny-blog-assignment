@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { getCurrentUser } from '../util.js';
 import BlogCard from '../components/BlogCard.jsx';
+import Navbar from '../components/Navbar.jsx';
 
 const AllBlogs = () => {
   const [user, setUser] = useState(null);
@@ -33,9 +34,10 @@ const AllBlogs = () => {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-6">All Blogs</h2>
+      <Navbar/>
+      <h2 className="text-xl p-4 font-semibold">All Blogs</h2>
 
-      <div className="container mx-auto px-4 py-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="container mx-auto px-4 py-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {blogs.map((blog) => (
           <BlogCard
             key={blog._id}

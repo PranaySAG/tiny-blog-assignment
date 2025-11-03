@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
-import { BLOG_CATEGORIES } from "../constants";
 import axios from "axios";
-import { getCurrentUser } from "../util.js";
 import toast, { Toaster } from "react-hot-toast";
+import Navbar from "../components/Navbar";
+import { BLOG_CATEGORIES } from "./../constants";
+import { getCurrentUser } from "./../util";
 
 function NewBlog() {
   const [content, setContent] = useState("");
@@ -12,35 +13,50 @@ function NewBlog() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    document.documentElement.setAttribute("data-color-mode", "light");
     setUser(getCurrentUser());
-  }, [])
+  }, []);
 
   const savedBlog = async () => {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/blogs`, {
-      title,
-      content,
-      category,
-      author: user?._id,
-  })
-    if (response.data.success) {
-      toast.success("Blog saved successfully");
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 2000);
-    }
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/blogs`,
+        {
+          title,
+          content,
+          category,
+          author: user?._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
- }
+      if (response?.data?.success) {
+        toast.success("Blog saved successfully");
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 2000);
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error creating blog");
+    }
+  };
 
   return (
     <div className="p-10" data-color-mode="light">
+      <Navbar/>
       <h2>Create a New Blog</h2>
 
-      <input 
-        type="text" 
-        placeholder="blog-title" 
+      <input
+        type="text"
+        placeholder="Blog title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="border p-2 my-5 rounded-2xl w-full bg-gray-50"/>
+        className="border p-2 my-5 rounded-2xl w-full bg-gray-50"
+      />
 
       <select
         value={category}
@@ -48,18 +64,21 @@ function NewBlog() {
         className="border my-5 p-2 rounded-lg"
       >
         {BLOG_CATEGORIES.map((cate) => (
-          <option key={cate} value={cate}>{cate}</option>
+          <option key={cate} value={cate}>
+            {cate}
+          </option>
         ))}
       </select>
-      <MDEditor
-        value={content}
-        onChange={setContent}
-        height={400}
-      />
 
-      <button className="bg-blue-100 mt-10 p-3 rounded-xl cursor-pointer" onClick={savedBlog}>
+      <MDEditor value={content} onChange={setContent} height={400} />
+
+      <button
+        className="bg-blue-100 mt-10 p-3 rounded-xl cursor-pointer disabled:opacity-50"
+        onClick={savedBlog}
+      >
         Save Blog
       </button>
+
       <Toaster />
     </div>
   );

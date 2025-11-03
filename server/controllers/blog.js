@@ -1,149 +1,153 @@
-import Blog from "../models/Blog.js";
-import jwt from "jsonwebtoken"; 
+import Blog from "./../models/Blog.js";
 
 const postBlogs = async (req, res) => {
-  const { title, content, category } = req.body;
-
+  const { title, category, content } = req.body;
   const { user } = req;
 
-  if (!title || !content || !category) {
+  if (!title || !category || !content) {
     return res.status(400).json({
       success: false,
-      message: "Title, content, and category are required",
+      message: "All fields are required",
     });
   }
 
-  try {
-    const newBlog = new Blog({
-      title,
-      content,
-      category,
-      author: user.id,
-      slug: `temp-slug-${Date.now()}-${Math.random()
-        .toString()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)+/g, "")}`,
-    });
+  const newBlog = new Blog({
+    title,
+    category,
+    content,
+    author: user.userId,
+    slug: `temp-slug-${Date.now()}-${Math.random().toString()}`,
+  });
 
-    const savedBlog = await newBlog.save();
+  const savedBlog = await newBlog.save();
 
-    savedBlog.slug = `${title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "")}-${savedBlog._id}`;
+  savedBlog.slug = `${title.toLowerCase().replace(/ /g, "-")}-${
+    savedBlog._id
+  }`.replace(/[^\w-]+/g, "");
 
-    await savedBlog.save();
+  await savedBlog.save();
 
-    res.status(201).json({
-      success: true,
-      message: "Blog created successfully",
-      blog: savedBlog,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to create blog",
-      error: error.message,
-    });
-  }
+  res.status(201).json({
+    success: true,
+    message: "Blog created successfully",
+    blog: savedBlog,
+  });
 };
 
 const getBlogs = async (req, res) => {
-    const { author } = req.query;
- 
-    const conditions = [{ status: "published" }];
+  const { author } = req.query;
 
-    if (author) {
-      conditions.push({ author: author });
-    }
+  const conditions = [{ status: "published" }];
 
-   const blogs = await Blog.find({ $or: conditions }).populate('author', '_id name email').sort({ status: 1, createdAt: -1 });
+  if (author) {
+    conditions.push({ author: author });
+  }
 
+  const blogs = await Blog.find({
+    $or: conditions,
+  })
+    .populate("author", "_id name email")
+    .sort({
+      status: 1,
+      updatedAt: -1,
+    });
 
-   res.status(200).json({
+  res.status(200).json({
     success: true,
     data: blogs,
-    message: "Blogs fetched successfully"
-   })
-}
+    message: "Blogs fetched successfully",
+  });
+};
 
 const getBlogForSlug = async (req, res) => {
-    const { slug } = req.params;
+  const { slug } = req.params;
 
-    const blog = await Blog.findOne({ slug: slug}).populate('author', '_id name email');    
+  const blog = await Blog.findOne({ slug: slug }).populate(
+    "author",
+    "_id name email"
+  );
 
-    if (!blog) {
-        return res.status(404).json({
-            success: false, 
-            message: "Blog not found"
-        })
-    }
+  if (!blog) {
+    return res.status(404).json({
+      success: false,
+      message: "Blog not found",
+    });
+  }
 
-    res.status(200).json({
-        success: true, 
-        data: blog,
-        message: "Blog fetched successfully"
-    })
-}
+  res.status(200).json({
+    success: true,
+    data: blog,
+    message: "Blog fetched successfully",
+  });
+};
 
 const patchPublishBlog = async (req, res) => {
-    const { slug } = req.params;
-    const  { user } = req;
-    const blog = await Blog.findOne({ slug: slug });
+  const { slug } = req.params;
+  const { user } = req;
 
-    if (!blog) {
-        return res.status(404).json({
-            success: false, 
-            message: "Blog not found"
-        })
-    }
+  const blog = await Blog.findOne({ slug: slug });
 
-    if (blog.author.toString() !== user.id) {
-        return res.status(403).json({
-            success: false,
-            message: "You are not authorized to publish this blog",
-        });
-    }
-
-    await Blog.findOneAndUpdate({ slug: slug }, { status: "published"});
-
-
-    res.status(200).json({
-        success: true,
-        data: blog,
-        message: "Blog published successfully"
+  if (!blog) {
+    return res.status(404).json({
+      success: false,
+      message: "Blog not found",
     });
-}
+  }
+
+  if (blog.author.toString() !== user.userId) {
+    return res.status(403).json({
+      success: false,
+      message: "You are not authorized to publish this blog",
+    });
+  }
+
+  await Blog.findOneAndUpdate({ slug: slug }, { status: "published" });
+
+  res.status(200).json({
+    success: true,
+    message: "Blog published successfully",
+  });
+};
 
 const putBlogs = async (req, res) => {
-    const { slug } = req.params;
-    const { title, content, category, author } = req.body;
+  const { slug } = req.params;
+  const { title, category, content } = req.body;
 
- 
-    const { user } = req;
+  const { user } = req;
 
   const existingBlog = await Blog.findOne({ slug: slug });
-    if (existingBlog.author.toString() !== user.id) {
-      return res.status(403).json({
-        success: false,
-        message: "You are not authorized to update this blog",
-      });
-    }
 
-    if (!title || !content || !category) {
-      return res.status(400).json({
-        success: false,
-        message: "Title, content, and category are required",
-      });
-    }
-
-    const blog = await Blog.findOneAndUpdate({ slug: slug }, { title, content, category });
-
-    res.status(200).json({
-        success: true,
-        data: blog,
-        message: "Blog updated successfully"
+  if (!existingBlog) {
+    return res.status(404).json({
+      success: false,
+      message: "Blog not found",
     });
+  }
+
+  if (existingBlog.author.toString() !== user.userId) {
+  return res.status(403).json({
+    success: false,
+    message: "You are not authorized to update this blog",
+  });
 }
 
-export { postBlogs , getBlogs , getBlogForSlug , patchPublishBlog , putBlogs };
+  if (!title || !category || !content) {
+    return res.status(400).json({
+      success: false,
+      message: "All fields are required",
+    });
+  }
+
+  const blog = await Blog.findOneAndUpdate(
+    { slug: slug },
+    { title, category, content }
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "Blog updated successfully",
+    blog: blog,
+  });
+};
+
+export { getBlogForSlug, getBlogs, patchPublishBlog, postBlogs, putBlogs };

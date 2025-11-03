@@ -17,6 +17,7 @@ const Login = () => {
     console.log(response.data);
     if (response.data.success) {
       localStorage.setItem("currentUser", JSON.stringify(response.data.user));
+      localStorage.setItem("token", response.data.token);
       window.location.href = "/";
     }
   };
