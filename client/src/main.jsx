@@ -6,7 +6,7 @@ import AllBlogs from './views/AllBlogs'
 import NewBlog from './views/NewBlog'
 import EditBlog from './views/EditBlog'
 import ReadBlog from './views/ReadBlog'
-import Login from './views/login'
+import Login from './views/Login'
 import SignUp from './views/SignUp'
 
 
