@@ -3,25 +3,13 @@ import jwt from "jsonwebtoken";
 
 const postBlogs = async (req, res) => {
   const { title, content, category } = req.body;
-  const { authorization } = req.headers;
 
-  if (!authorization) {
-    return res.status(401).json({
-      success: false,
-      message: "Authorization header missing",
-    });
-  }
+  const { user } = req;
 
-  let decodedToken;
-  try {
-    decodedToken = jwt.verify(
-      authorization.split(" ")[1],
-      process.env.JWT_SECRET
-    );
-  } catch (error) {
-    return res.status(401).json({
+  if (!title || !content || !category) {
+    return res.status(400).json({
       success: false,
-      message: "Invalid or expired token",
+      message: "Title, content, and category are required",
     });
   }
 
@@ -30,7 +18,7 @@ const postBlogs = async (req, res) => {
       title,
       content,
       category,
-      author: decodedToken.id, 
+      author: user.id,
       slug: `temp-slug-${Date.now()}-${Math.random()
         .toString()
         .replace(/[^a-z0-9]+/g, "-")
@@ -100,8 +88,24 @@ const getBlogForSlug = async (req, res) => {
 
 const patchPublishBlog = async (req, res) => {
     const { slug } = req.params;
+    const  { user } = req;
+    const blog = await Blog.findOne({ slug: slug });
 
-    const blog = await Blog.findOneAndUpdate({ slug: slug }, { status: "published"});
+    if (!blog) {
+        return res.status(404).json({
+            success: false, 
+            message: "Blog not found"
+        })
+    }
+
+    if (blog.author.toString() !== user.id) {
+        return res.status(403).json({
+            success: false,
+            message: "You are not authorized to publish this blog",
+        });
+    }
+
+    await Blog.findOneAndUpdate({ slug: slug }, { status: "published"});
 
 
     res.status(200).json({
@@ -114,6 +118,24 @@ const patchPublishBlog = async (req, res) => {
 const putBlogs = async (req, res) => {
     const { slug } = req.params;
     const { title, content, category, author } = req.body;
+
+ 
+    const { user } = req;
+
+  const existingBlog = await Blog.findOne({ slug: slug });
+    if (existingBlog.author.toString() !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not authorized to update this blog",
+      });
+    }
+
+    if (!title || !content || !category) {
+      return res.status(400).json({
+        success: false,
+        message: "Title, content, and category are required",
+      });
+    }
 
     const blog = await Blog.findOneAndUpdate({ slug: slug }, { title, content, category });
 
