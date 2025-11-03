@@ -4,7 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 
 
-const Login = () => {
+const login = () => {
 
 
   const [user, setUser] = useState({
@@ -61,4 +61,4 @@ const Login = () => {
         </div>
   )
 }
-export default Login;
+export default login;
