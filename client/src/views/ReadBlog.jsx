@@ -13,7 +13,7 @@ function ReadBlog() {
 
   const fetchBlog = async () => {
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/blogs/${slug}`
+      `${import.meta.env.VITE_API_URL}blogs/${slug}`
     );
     setBlog(response.data.data);
   };

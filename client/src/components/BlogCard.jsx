@@ -21,7 +21,7 @@ function BlogCard({
     const fetchLikes = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_API_URL}/blogs/${slug}/like`,
+          `${import.meta.env.VITE_API_URL}blogs/${slug}/like`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -44,7 +44,7 @@ function BlogCard({
   const handleLike = async () => {
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/blogs/${slug}/like`,
+        `${import.meta.env.VITE_API_URL}blogs/${slug}/like`,
         {},
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
@@ -69,7 +69,7 @@ function BlogCard({
 
     try {
       const res = await axios.delete(
-        `${import.meta.env.VITE_API_URL}/blogs/${slug}`,
+        `${import.meta.env.VITE_API_URL}blogs/${slug}`,
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }

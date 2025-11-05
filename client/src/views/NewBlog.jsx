@@ -20,7 +20,7 @@ function NewBlog() {
   const savedBlog = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/blogs`,
+        `${import.meta.env.VITE_API_URL}blogs`,
         {
           title,
           content,

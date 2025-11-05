@@ -11,7 +11,7 @@ const AllBlogs = () => {
   const fetchBlogs = async (authorId = "") => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/blogs?author=${authorId}`
+        `${import.meta.env.VITE_API_URL}blogs?author=${authorId}`
       );
       if (response.data.success) {
         setBlogs(response.data.data);

@@ -11,7 +11,7 @@ function Comment() {
   useEffect(() => {
     const fetchComments = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/blogs/${slug}/comments`);
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}blogs/${slug}/comments`);
         setComments(res.data.comments || []);
       } catch (error) {
         console.error("Error fetching comments:", error);
@@ -26,7 +26,7 @@ function Comment() {
 
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/blogs/${slug}/comments`,
+        `${import.meta.env.VITE_API_URL}blogs/${slug}/comments`,
         { content: newComment },
         {
           headers: {

@@ -62,7 +62,6 @@ const deleteBlog = async (req, res) => {
       return res.status(404).json({ success: false, message: "Blog not found" });
     }
 
-    // ✅ FIX: req.user.userId instead of req.user._id
     if (blog.author.toString() !== req.user.userId) {
       return res.status(403).json({ success: false, message: "Unauthorized: You can only delete your own blog" });
     }

@@ -17,7 +17,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/login`,
+        `${import.meta.env.VITE_API_URL}login`,
         user
       );
 
@@ -39,7 +39,6 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex flex-col justify-center items-center p-4">
-      {/* Toast Container */}
       <Toaster position="top-center" reverseOrder={false} />
 
       <div className="container w-full max-w-lg border border-gray-300 p-8 rounded-lg shadow-lg bg-white">

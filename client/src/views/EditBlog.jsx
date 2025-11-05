@@ -36,7 +36,7 @@ function EditBlog() {
   const updateBlog = async () => {
     try {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/blogs/${slug}`,
+        `${import.meta.env.VITE_API_URL}blogs/${slug}`,
         {
           title,
           content,
@@ -63,7 +63,7 @@ function EditBlog() {
   const publishBlog = async () => {
     try {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/blogs/${slug}/publish`,
+        `${import.meta.env.VITE_API_URL}blogs/${slug}/publish`,
         {},
         {
           headers: {
