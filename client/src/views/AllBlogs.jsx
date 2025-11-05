@@ -13,7 +13,7 @@ const AllBlogs = () => {
     try {
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `{${import.meta.env.VITE_API_URL}blogs?author=${authorId}`,
+        `${import.meta.env.VITE_API_URL}blogs${authorId ? `?author=${authorId}` : ""}`,
         {
           headers: token ? { Authorization: `Bearer ${token}` } : {}, 
         }

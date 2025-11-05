@@ -20,13 +20,12 @@ function BlogCard({
   useEffect(() => {
     const fetchLikes = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
         const res = await axios.get(
           `${import.meta.env.VITE_API_URL}blogs/${slug}/like`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (res.data.success) {
@@ -43,12 +42,13 @@ function BlogCard({
 
   const handleLike = async () => {
     try {
+      const token = localStorage.getItem("token");
+      if (!token) return alert("Login to like the blog");
+
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}blogs/${slug}/like`,
         {},
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (res.data.success) {
@@ -62,17 +62,13 @@ function BlogCard({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this blog?"
-    );
+    const confirmed = window.confirm("Are you sure you want to delete this blog?");
     if (!confirmed) return;
 
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_API_URL}blogs/${slug}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
       if (res.data.success) {
@@ -88,7 +84,9 @@ function BlogCard({
     <div className="w-full mx-auto mb-15 border-b border-gray-600 border-0.5 relative p-5">
       <div className="text-sm my-2">
         {category} by{" "}
-        <span className="font-semibold text-gray-600">{author.name}</span>
+        <span className="font-semibold text-gray-600">
+          {author?.name || "Unknown"}
+        </span>
       </div>
 
       <h1 className="text-4xl font-semibold text-gray-800 my-3">{title}</h1>
@@ -96,8 +94,7 @@ function BlogCard({
       <div className="text-sm text-gray-800 mt-2 flex items-center gap-2">
         <span>{new Date(publishedAt || updatedAt).toLocaleDateString()}</span>
         <span className="text-sm text-gray-800">
-          {"Views:"}
-          <span className="ml-1">{viewCount}</span>
+          {"Views:"} <span className="ml-1">{viewCount}</span>
         </span>
         <button
           onClick={handleLike}
