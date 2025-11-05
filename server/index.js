@@ -47,11 +47,31 @@ app.get('/', (req, res) => {
 const jwtCheck = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
+    return next(); // no token, treat as guest
+  }
+  if (!authorization) {
     return res.status(401).json({
       success: false,
       message: "Authorization token missing",
     });
   }
+
+  const optionalJwtCheck = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  if (!authHeader) return next(); // guest, no token
+
+  const token = authHeader.split(" ")[1];
+  if (!token) return next(); // malformed, treat as guest
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // logged-in user
+  } catch (err) {
+    console.warn("Invalid token, continuing as guest");
+  }
+
+  next();
+};
 
   try {
     const token = authorization.split(" ")[1];

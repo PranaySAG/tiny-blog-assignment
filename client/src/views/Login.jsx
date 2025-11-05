@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import BackButton from "../components/BackButton";
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -38,7 +39,10 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center items-center p-4">
+    <>
+    <div className="m-3"><BackButton/></div>
+    <div className="min-h-screen flex  justify-center items-center p-4">
+     
       <Toaster position="top-center" reverseOrder={false} />
 
       <div className="container w-full max-w-lg border border-gray-300 p-8 rounded-lg shadow-lg bg-white">
@@ -84,6 +88,7 @@ const Login = () => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 
