@@ -2,6 +2,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import { getCurrentUser } from "../util";
 import { Link } from "react-router";
+import write from "../../public/edit.png";
+
 function Navbar() {
   const [user, setUser] = useState(null);
 
@@ -10,15 +12,15 @@ function Navbar() {
   }, []);
 
   return (
-    <div className="flex items-center justify-between p-4">
+    <div className="flex items-center justify-between p-2">
       <div>
         {user ? (
-          <span className="text-lg font-medium">Hello, {user.name}</span>
+          <span className="text-lg font-bold">Hello, {user.name}</span>
         ) : (
           <span className="text-lg">Welcome, Guest</span>
         )}
       </div>
-
+       <Link to="/new"><p className="flex items-center gap-2 cursor-pointer"><img src={write} alt="write" className="h-7" />Write</p></Link>
       <div>
         {user ? (
           <button

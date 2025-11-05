@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import MDEditor from "@uiw/react-md-editor";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
-import Navbar from "../components/Navbar";
 import { BLOG_CATEGORIES } from "./../constants";
 import { getCurrentUser } from "./../util";
+import BackButton from "../components/BackButton";
 
 function NewBlog() {
   const [content, setContent] = useState("");
@@ -46,8 +46,8 @@ function NewBlog() {
   };
 
   return (
-    <div className="p-10" data-color-mode="light">
-      <Navbar/>
+    <div className="px-10" data-color-mode="light">
+      <BackButton />
       <h2>Create a New Blog</h2>
 
       <input
@@ -73,7 +73,7 @@ function NewBlog() {
       <MDEditor value={content} onChange={setContent} height={400} />
 
       <button
-        className="bg-blue-100 mt-10 p-3 rounded-xl cursor-pointer disabled:opacity-50"
+        className="bg-blue-100 mt-10 mb-4 p-3 rounded-xl cursor-pointer disabled:opacity-50"
         onClick={savedBlog}
       >
         Save Blog

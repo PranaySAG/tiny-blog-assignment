@@ -3,9 +3,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose, { get } from 'mongoose';
 import { postSignup, postLogin } from './controllers/user.js';
-import { postBlogs , getBlogs, getBlogForSlug, patchPublishBlog, putBlogs } from './controllers/blog.js';
+import { postBlogs , getBlogs, getBlogForSlug, patchPublishBlog, putBlogs, blogLike, fetchLike } from './controllers/blog.js';
 import jwt from 'jsonwebtoken';
 import Blog from './models/Blog.js';
+import { postComment, getComments, deleteBlog } from './controllers/comments.js';
 
 dotenv.config();
 const app = express();  
@@ -69,6 +70,11 @@ app.post("/blogs", jwtCheck, postBlogs)
 app.get("/blogs/:slug", increaseViewCount, getBlogForSlug)
 app.patch("/blogs/:slug/publish", jwtCheck, patchPublishBlog)
 app.put("/blogs/:slug", jwtCheck, putBlogs)
+app.post("/blogs/:slug/comments", jwtCheck, postComment)
+app.get("/blogs/:slug/comments", getComments)
+app.delete("/blogs/:slug", jwtCheck, deleteBlog)
+app.post("/blogs/:slug/like", jwtCheck, blogLike);
+app.get("/blogs/:slug/like", jwtCheck, fetchLike);
 
 
 app.listen(PORT, (err) => {

@@ -150,4 +150,60 @@ const putBlogs = async (req, res) => {
   });
 };
 
-export { getBlogForSlug, getBlogs, patchPublishBlog, postBlogs, putBlogs };
+const blogLike = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.userId;
+
+    const blog = await Blog.findOne({ slug });
+    if (!blog) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+
+    const alreadyLiked = blog.likedBy.includes(userId);
+
+    if (alreadyLiked) {
+      // Unlike
+      blog.likedBy.pull(userId);
+      blog.likes -= 1;
+    } else {
+      // Like
+      blog.likedBy.push(userId);
+      blog.likes += 1;
+    }
+
+    await blog.save();
+
+    res.json({
+      success: true,
+      liked: !alreadyLiked,
+      likes: blog.likes,
+    });
+  } catch (error) {
+    console.error("Error toggling like:", error);
+    res.status(500).json({ success: false, message: "Server error while liking blog" });
+  }
+};
+
+const fetchLike = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const userId = req.user.userId;   
+    const blog = await Blog.findOne({ slug });
+    if (!blog) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+    const alreadyLiked = blog.likedBy.includes(userId);
+    res.json({
+      success: true,
+      liked: alreadyLiked,
+      likes: blog.likes,
+    });
+  } catch (error) {
+    console.error("Error fetching like status:", error);
+
+    res.status(500).json({ success: false, message: "Server error while fetching like status" });
+  }
+};
+
+export { getBlogForSlug, getBlogs, patchPublishBlog, postBlogs, putBlogs, blogLike, fetchLike };

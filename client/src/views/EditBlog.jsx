@@ -4,8 +4,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useParams } from "react-router";
-import Navbar from "../components/Navbar";
+import back from "../../public/previous.png";
 import { BLOG_CATEGORIES } from "./../constants";
+import BackButton from "../components/BackButton";
 
 function EditBlog() {
   const [content, setContent] = useState("");
@@ -82,8 +83,8 @@ function EditBlog() {
     }
   };
   return (
-    <div className="p-10" data-color-mode="light">
-      <Navbar/>
+    <div className="p-4" data-color-mode="light">
+      <BackButton/>
       <h2>Edit Blog</h2>
 
       <input
