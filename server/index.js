@@ -3,8 +3,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
 import { postSignup, postLogin } from './controllers/user.js';
 import {
@@ -23,9 +21,6 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
@@ -35,11 +30,10 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
-
 app.use(express.json());
 app.use(cors({
   origin: [
-    "https://tiny-blog-assignment.onrender.com",
+    "https://tiny-blog-assignment.onrender.com", 
     "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -53,15 +47,22 @@ app.get('/', (req, res) => {
 const jwtCheck = (req, res, next) => {
   const { authorization } = req.headers;
   if (!authorization) {
-    return res.status(401).json({ success: false, message: "Authorization token missing" });
+    return res.status(401).json({
+      success: false,
+      message: "Authorization token missing",
+    });
   }
+
   try {
     const token = authorization.split(" ")[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decodedToken;
     next();
   } catch (error) {
-    return res.status(401).json({ success: false, message: "Invalid or expired token" });
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
   }
 };
 
@@ -78,6 +79,7 @@ const increaseViewCount = async (req, res, next) => {
   }
   next();
 };
+
 
 // Auth
 app.post('/signup', postSignup);
@@ -99,11 +101,6 @@ app.get('/blogs/:slug/like', jwtCheck, fetchLike);
 app.post('/blogs/:slug/comments', jwtCheck, postComment);
 app.get('/blogs/:slug/comments', getComments);
 
-// Serve React SPA for any other route
-app.use(express.static(path.join(__dirname, 'client/dist')));
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
-});
 
 app.listen(PORT, (err) => {
   if (err) {
