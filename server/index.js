@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { postSignup, postLogin } from './controllers/user.js';
 import {
@@ -30,10 +32,11 @@ const connectDB = async () => {
     process.exit(1);
   }
 };
+
 app.use(express.json());
 app.use(cors({
   origin: [
-    "https://tiny-blog-assignment.onrender.com", 
+    "https://tiny-blog-assignment.onrender.com",
     "http://localhost:5173"
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
@@ -46,23 +49,14 @@ app.get('/', (req, res) => {
 
 const jwtCheck = (req, res, next) => {
   const { authorization } = req.headers;
-  if (!authorization) {
-    return res.status(401).json({
-      success: false,
-      message: "Authorization token missing",
-    });
-  }
-
+  if (!authorization) return res.status(401).json({ success: false, message: "Authorization token missing" });
   try {
     const token = authorization.split(" ")[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     req.user = decodedToken;
     next();
   } catch (error) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid or expired token",
-    });
+    return res.status(401).json({ success: false, message: "Invalid or expired token" });
   }
 };
 
@@ -74,18 +68,13 @@ const increaseViewCount = async (req, res, next) => {
       blog.viewCount = (blog.viewCount || 0) + 1;
       await blog.save();
     }
-  } catch (error) {
-    console.error("Error increasing view count:", error.message);
-  }
+  } catch (error) {}
   next();
 };
 
-
-// Auth
 app.post('/signup', postSignup);
 app.post('/login', postLogin);
 
-// Blogs
 app.get('/blogs', getBlogs);
 app.post('/blogs', jwtCheck, postBlogs);
 app.get('/blogs/:slug', increaseViewCount, getBlogForSlug);
@@ -93,14 +82,18 @@ app.patch('/blogs/:slug/publish', jwtCheck, patchPublishBlog);
 app.put('/blogs/:slug', jwtCheck, putBlogs);
 app.delete('/blogs/:slug', jwtCheck, deleteBlog);
 
-// Likes
 app.post('/blogs/:slug/like', jwtCheck, blogLike);
 app.get('/blogs/:slug/like', jwtCheck, fetchLike);
 
-// Comments
 app.post('/blogs/:slug/comments', jwtCheck, postComment);
 app.get('/blogs/:slug/comments', getComments);
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use(express.static(path.join(__dirname, 'client', 'dist')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+});
 
 app.listen(PORT, (err) => {
   if (err) {

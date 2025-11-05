@@ -13,7 +13,7 @@ const SignUp = () => {
   const signUpUser = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/signup`,
+        `${import.meta.env.VITE_API_URL}signup`,
         user
       );
 
