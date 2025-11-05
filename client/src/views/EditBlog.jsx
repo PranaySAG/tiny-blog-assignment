@@ -18,7 +18,7 @@ function EditBlog() {
     if (!slug) return;
 
     const response = await axios.get(
-      `${import.meta.env.VITE_API_URL}/blogs/${slug}`
+      `${import.meta.env.VITE_API_URL}blogs/${slug}`
     );
 
     const blogData = response?.data?.data;

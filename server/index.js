@@ -23,6 +23,9 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URL);
@@ -49,7 +52,9 @@ app.get('/', (req, res) => {
 
 const jwtCheck = (req, res, next) => {
   const { authorization } = req.headers;
-  if (!authorization) return res.status(401).json({ success: false, message: "Authorization token missing" });
+  if (!authorization) {
+    return res.status(401).json({ success: false, message: "Authorization token missing" });
+  }
   try {
     const token = authorization.split(" ")[1];
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -68,13 +73,17 @@ const increaseViewCount = async (req, res, next) => {
       blog.viewCount = (blog.viewCount || 0) + 1;
       await blog.save();
     }
-  } catch (error) {}
+  } catch (error) {
+    console.error("Error increasing view count:", error.message);
+  }
   next();
 };
 
+// Auth
 app.post('/signup', postSignup);
 app.post('/login', postLogin);
 
+// Blogs
 app.get('/blogs', getBlogs);
 app.post('/blogs', jwtCheck, postBlogs);
 app.get('/blogs/:slug', increaseViewCount, getBlogForSlug);
@@ -82,17 +91,18 @@ app.patch('/blogs/:slug/publish', jwtCheck, patchPublishBlog);
 app.put('/blogs/:slug', jwtCheck, putBlogs);
 app.delete('/blogs/:slug', jwtCheck, deleteBlog);
 
+// Likes
 app.post('/blogs/:slug/like', jwtCheck, blogLike);
 app.get('/blogs/:slug/like', jwtCheck, fetchLike);
 
+// Comments
 app.post('/blogs/:slug/comments', jwtCheck, postComment);
 app.get('/blogs/:slug/comments', getComments);
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use(express.static(path.join(__dirname, 'client', 'dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'dist', 'index.html'));
+// Serve React SPA for any other route
+app.use(express.static(path.join(__dirname, 'client/dist')));
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
 });
 
 app.listen(PORT, (err) => {
