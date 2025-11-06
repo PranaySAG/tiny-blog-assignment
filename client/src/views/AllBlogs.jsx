@@ -36,7 +36,13 @@ const AllBlogs = () => {
   return (
     <div>
       <Navbar />
-      <h1 className="text-3xl p-4 mt-12 font-semibold">All Blogs</h1>
+      <div className="mt-16 p-4">
+       {user ? (
+          <span className="text-md font-bold">Hello, <span className="text-gray-600 text-3xl uppercase">{user.name}</span></span>
+        ) : (
+          <span className="text-md font-bold">Welcome, <span className='text-gray-600 text-3xl font-bold'>Guest</span></span>
+        )}
+      </div>
       {warning && (
         <div className="flex items-center justify-between bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 max-w-4xl mx-auto mb-4" role="alert">
           <p>Hosted on Render (free tier). May take a few seconds to wake up.</p>
