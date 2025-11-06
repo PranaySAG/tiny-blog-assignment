@@ -19,7 +19,7 @@ function BlogCard({
 }) {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [liked, setLiked] = useState(false);
-  const [commentsCount, setCommentsCount] = useState(0); 
+  const [commentsCount, setCommentsCount] = useState(0);
 
   useEffect(() => {
     const fetchLikesAndComments = async () => {
@@ -42,7 +42,7 @@ function BlogCard({
           `${import.meta.env.VITE_API_URL}blogs/${slug}/comments`
         );
         if (commentsRes.data.success) {
-          setCommentsCount(commentsRes.data.comments.length); 
+          setCommentsCount(commentsRes.data.comments.length);
         }
       } catch (error) {
         console.error("Error fetching blog data:", error);
@@ -74,13 +74,17 @@ function BlogCard({
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this blog?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this blog?"
+    );
     if (!confirmed) return;
 
     try {
       const res = await axios.delete(
         `${import.meta.env.VITE_API_URL}blogs/${slug}`,
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
       );
 
       if (res.data.success) {
@@ -104,23 +108,30 @@ function BlogCard({
       <h1 className="text-4xl font-semibold text-gray-800 my-3">{title}</h1>
 
       <div className="text-sm text-gray-800 mt-2 flex items-center gap-3">
-        <span className="font-semibold text-[15px]"><span>Published On: </span>{new Date(publishedAt || updatedAt).toLocaleDateString()}</span>
-        <span className="flex items-center">
-          <img src={view} alt="view" className="h-5" /> <span className="ml-1 font-semibold text-[15px]">{viewCount}</span>
+        <span className="font-semibold text-[15px]">
+          <span>Published On: </span>
+          {new Date(publishedAt || updatedAt).toLocaleDateString()}
         </span>
         <span className="flex items-center">
-        <img src={comment} className="h-4" alt="comment" /> <span className="ml-1 font-semibold text-[15px]">{commentsCount}</span>{" "}
+          <img src={view} alt="view" className="h-5" />{" "}
+          <span className="ml-1 font-semibold text-[15px]">{viewCount}</span>
+        </span>
+        <span className="flex items-center">
+          <img src={comment} className="h-4" alt="comment" />{" "}
+          <span className="ml-1 font-semibold text-[15px]">
+            {commentsCount}
+          </span>{" "}
         </span>
         <button
           onClick={handleLike}
           className={`flex items-center gap-1 font-semibold text-[15px] h-4`}
         >
-        <img src={like} alt="like" className="h-4"/> {likes}
+          <img src={like} alt="like" className="h-4" /> {likes}
         </button>
       </div>
 
       {status !== "published" && (
-        <p className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full">
+        <p className="absolute top-4 right-4 bg-yellow-200 text-yellow-800 text-xs font-semibold px-2 py-1 rounded-full">
           {status.toUpperCase()}
         </p>
       )}
