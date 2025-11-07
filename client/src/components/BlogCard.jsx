@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router"; // 💡 Use 'react-router-dom'
 import axios from "axios";
 import Delete from "../../public/delete.png";
 import comment from "../../public/comment.png";
@@ -16,57 +16,54 @@ function BlogCard({
   publishedAt,
   viewCount,
   likes: initialLikes,
+  onDelete, 
 }) {
   const [likes, setLikes] = useState(initialLikes || 0);
   const [liked, setLiked] = useState(false);
   const [commentsCount, setCommentsCount] = useState(0);
 
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/";
+  const API_URL = import.meta.env.VITE_API_URL?.replace(/\/$/, '') || "http://localhost:5000";
 
   useEffect(() => {
     if (!slug) return;
 
     const fetchLikesAndComments = async () => {
-      try {
-        const token = localStorage.getItem("token");
-
-        // Fetch likes if user logged in
-        if (token) {
-          try {
-            const res = await axios.get(`${API_URL}blogs/${slug}/like`, {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (res.data?.success) {
-              setLikes(res.data.likes);
-              setLiked(res.data.liked);
-            }
-          } catch (err) {
-            console.warn("Like fetch failed:", err.message);
-          }
-        }
+      const token = localStorage.getItem("token");
+      if (token) {
         try {
-          const commentsRes = await axios.get(`${API_URL}blogs/${slug}/comments`);
-          if (commentsRes.data?.success && commentsRes.data.comments) {
-            setCommentsCount(commentsRes.data.comments.length);
+          const res = await axios.get(`${API_URL}/blogs/${slug}/like`, { 
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.data?.success) {
+            setLikes(res.data.likes);
+            setLiked(res.data.liked);
           }
         } catch (err) {
-          console.warn("Comments fetch failed:", err.message);
+          console.error("Error fetching likes:", err);
         }
-      } catch (error) {
-        console.error("Error fetching blog data:", error);
       }
+
+     
+      try {
+        const commentsRes = await axios.get(`${API_URL}/blogs/${slug}/comments`);
+        if (commentsRes.data?.success && commentsRes.data.comments) {
+          setCommentsCount(commentsRes.data.comments.length);
+        }
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
+      
     };
 
     fetchLikesAndComments();
-  }, [slug, API_URL]);
-
+  }, [slug, API_URL]); 
   const handleLike = async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("Login to like the blog");
 
       const res = await axios.post(
-        `${API_URL}blogs/${slug}/like`,
+        `${API_URL}/blogs/${slug}/like`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -86,16 +83,21 @@ function BlogCard({
     if (!confirmed) return;
 
     try {
-      const res = await axios.delete(`${API_URL}blogs/${slug}`, {
+      const res = await axios.delete(`${API_URL}/blogs/${slug}`, { 
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
 
       if (res.data?.success) {
         alert("Blog deleted successfully!");
-        window.location.reload();
+        if (onDelete) {
+            onDelete(slug);
+        }
+      } else {
+         alert(res.data?.message || "Failed to delete blog.");
       }
     } catch (error) {
       console.error("Error deleting blog:", error);
+       alert("Server error while deleting blog.");
     }
   };
 
@@ -140,7 +142,7 @@ function BlogCard({
 
         <button
           onClick={handleLike}
-          className="flex items-center gap-1 text-gray-800 hover:text-black"
+          className={`flex items-center gap-1 hover:text-black transition-colors ${liked ? 'text-blue-600 font-bold' : 'text-gray-800'}`}
         >
           <img src={like} alt="like" className="h-4" />
           <span className="font-semibold">{likes}</span>
