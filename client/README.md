@@ -1,16 +1,54 @@
-# React + Vite
+# 📝 TinyBlog — Minimalist MERN Blog Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean, minimalist **full-stack blogging platform** built using the **MERN stack** (MongoDB, Express, React, Node.js).  
+TinyBlog allows users to create, edit, publish, and read blogs with an elegant black & white UI that focuses purely on content.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌐 Live Demo
+👉 [Deployed Link](https://tiny-blog-assignment.onrender.com)  
 
-## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 👤 Authentication
+- Secure signup & login using JWT.
+- Passwords stored with hashing for security.
+- Session handling via local storage.
+
+### 📰 Blog Management
+- Create, edit, publish, and delete your own blogs.
+- Draft and publish modes for better workflow.
+- View count, likes, and comments integrated.
+
+### 💬 Engagement
+- Authenticated users can like and comment on blogs.
+- Guest users can view likes and comments count but cannot like.
+
+### 🏠 Modern UI
+- Minimalist black and white theme for clean readability.
+- Responsive design for all screen sizes.
+- “Read More” button redirects to detailed blog page.
+
+### 🧠 Additional Features
+- Author and category display.
+- Published and updated timestamps.
+- Loading skeletons for better UX.
+- Error-safe rendering (no crash on reload).
+
+---
+
+## 🛠️ Tech Stack
+
+| Category | Technologies Used |
+|-----------|------------------|
+| **Frontend** | React, React Router, Axios, Tailwind CSS |
+| **Backend** | Node.js, Express.js |
+| **Database** | MongoDB (Mongoose ODM) |
+| **Auth** | JWT (JSON Web Tokens) |
+| **Hosting** | Render  |
+
+---
+
