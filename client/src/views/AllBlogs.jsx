@@ -3,6 +3,7 @@ import axios from 'axios';
 import { getCurrentUser } from '../util.js';
 import BlogCard from '../components/BlogCard.jsx';
 import Navbar from '../components/Navbar.jsx';
+import Footer from '../components/Footer.jsx';
 
 const AllBlogs = () => {
   const [user, setUser] = useState(null);
@@ -46,7 +47,7 @@ const AllBlogs = () => {
       {warning && (
         <div className="flex items-center justify-between bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 max-w-4xl mx-auto mb-4" role="alert">
           <p>Hosted on Render (free tier). May take a few seconds to wake up.</p>
-          <span className="close" onClick={() => setWarning(false)}>❌</span>
+          <span className="close cursor-pointer" onClick={() => setWarning(false)}>❌</span>
         </div>
       )}
       <div className="w-full max-w-4xl mx-auto p-4">
@@ -70,6 +71,7 @@ const AllBlogs = () => {
           <p className="text-center text-gray-500">No blogs to show.</p>
         )}
       </div>
+      <Footer />
     </div>
   );
 };
